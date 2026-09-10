@@ -2,34 +2,38 @@
   import BottomNav from './lib/BottomNav.svelte';
   import Vista from './lib/Vista.svelte';
   import Vacio from './lib/Vacio.svelte';
+  import Hoy from './views/Hoy.svelte';
+  import Semana from './views/Semana.svelte';
+  import Ideas from './views/Ideas.svelte';
   import { router } from './lib/router.svelte';
+  import { estado } from './lib/estado.svelte';
 
-  const HOY = new Date();
-  const fmtFecha = new Intl.DateTimeFormat('es-ES', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long'
-  });
+  estado.init();
 </script>
 
 <main>
-  {#if router.ruta === 'hoy'}
-    <Vista titulo="Hoy" sub={fmtFecha.format(HOY)}>
-      <Vacio texto="Aún no hay bloques para hoy." accion="Añadir bloque" />
-    </Vista>
+  {#if !estado.listo}
+    <div class="cargando" role="status" aria-live="polite">Cargando tu día…</div>
+  {:else if router.ruta === 'hoy'}
+    <Hoy />
   {:else if router.ruta === 'semana'}
-    <Vista titulo="Semana" sub="Reparte los bloques entre los días">
-      <Vacio texto="La semana está vacía. Empieza por un día de grabación." accion="Planificar semana" />
-    </Vista>
+    <Semana />
   {:else if router.ruta === 'mapa'}
     <Vista titulo="Mapa" sub="Mes y año: campañas y objetivos">
-      <Vacio texto="Sin objetivos definidos todavía." accion="Crear objetivo" />
+      <Vacio texto="Los objetivos de mes y año llegan en la siguiente fase." />
     </Vista>
   {:else}
-    <Vista titulo="Ideas" sub="Banco de ideas, plantillas y ajustes">
-      <Vacio texto="El banco de ideas está vacío." accion="Anotar idea" />
-    </Vista>
+    <Ideas />
   {/if}
 </main>
 
 <BottomNav />
+
+<style>
+  .cargando {
+    display: grid;
+    place-items: center;
+    min-height: 100dvh;
+    color: var(--fg-muted);
+  }
+</style>

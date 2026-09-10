@@ -1,6 +1,6 @@
 # MAI-Focus — Organizador de contenido para redes (TDAH-first)
 
-> Estado: F0 en marcha (esqueleto navegable). Web primero (PC + móvil), APK nativa después vía Capacitor.
+> Estado: F1 entregada (día y semana reales con persistencia local). Repo privado `MAI-Software/MAI-Focus`. Web primero (PC + móvil), APK nativa después vía Capacitor.
 
 ## 1. Qué es
 
@@ -145,8 +145,8 @@ reward(user_id, xp, desbloqueos[])
 
 | Fase | Contenido | Salida |
 |---|---|---|
-| F0 | Repo, Vite+TS, tokens de diseño, layout vertical, nav inferior | Esqueleto navegable |
-| F1 | Vista Hoy + Semana, bloques de 5 min, arrastrar/redimensionar, persistencia local | Usable sin cuenta |
+| F0 ✅ | Repo, Vite+TS, tokens de diseño, layout vertical, nav inferior | Esqueleto navegable |
+| F1 ✅ | Vista Hoy + Semana, bloques con snap al tramo, arrastrar/redimensionar, IndexedDB | Usable sin cuenta |
 | F2 | Mes + Año, objetivos y herencia de color, eventos | Los 3 horizontes |
 | F3 | Sonido, animaciones, XP, rachas, modo Calma | Capa de recompensa |
 | F4 | Foco, pausas, ritual de desconexión, notificaciones | Capa TDAH completa |
@@ -154,6 +154,11 @@ reward(user_id, xp, desbloqueos[])
 | F6 | Capacitor, haptics, iconos/splash, APK por Actions | APK |
 
 Despliegue web en Cloudflare Pages desde F1, para probar en el móvil real desde el principio.
+
+### Fuera de F1 (pendiente en F2)
+- Arrastrar bloques **entre días** en la vista Semana (ahora se mueve desde el editor con «Mover a mañana»).
+- Editar/crear plantillas propias (las 6 de fábrica ya funcionan como botón de un toque).
+- Banco de ideas, recurrencias y eventos de hora fija.
 
 ## 8. Lo que hace falta de ti (branding)
 
