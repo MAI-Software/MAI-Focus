@@ -1,0 +1,147 @@
+/* MAI-Focus — tokens y base. Ver docs/ESPECIFICACION.md §5 */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* superficies */
+  --bg: #0f172a;
+  --surface: #192134;
+  --surface-2: #10192e;
+  --fg: #ffffff;
+  --fg-muted: #94a3b8;
+  --border: rgba(255, 255, 255, 0.08);
+
+  /* semánticos */
+  --primary: #ea580c;
+  --on-primary: #ffffff;
+  --success: #059669;
+  --warn: #f59e0b;
+  --destructive: #dc2626;
+  --focus-ring: #f97316;
+
+  /* categorías (objetivo anual / tipo de contenido) */
+  --cat-1: #f43f5e;
+  --cat-2: #f97316;
+  --cat-3: #eab308;
+  --cat-4: #22c55e;
+  --cat-5: #38bdf8;
+  --cat-6: #a78bfa;
+
+  /* escala tipográfica */
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.5rem;
+  --fs-2xl: 2rem;
+
+  /* ritmo 4/8 */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+
+  --radius: 12px;
+  --radius-sm: 8px;
+
+  /* capas */
+  --z-nav: 40;
+  --z-sheet: 100;
+  --z-modal: 1000;
+
+  /* movimiento */
+  --dur-in: 220ms;
+  --dur-out: 140ms;
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* alto de la barra inferior, incluida safe-area */
+  --nav-h: calc(60px + env(safe-area-inset-bottom, 0px));
+
+  color-scheme: dark;
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+:root[data-theme='light'] {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-2: #f1f5f9;
+  --fg: #0f172a;
+  --fg-muted: #475569;
+  --border: rgba(15, 23, 42, 0.12);
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: var(--fs-md);
+  line-height: 1.5;
+  overscroll-behavior-y: none;
+}
+
+body {
+  /* la app es vertical: nunca scroll horizontal */
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  line-height: 1.25;
+  font-weight: 600;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* cifras alineadas en relojes y contadores */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Modo Calma y preferencia del sistema: sin movimiento innecesario */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 100ms !important;
+  }
+}
+
+:root[data-calma='true'] *,
+:root[data-calma='true'] *::before,
+:root[data-calma='true'] *::after {
+  animation: none !important;
+  transition-duration: 100ms !important;
+}
