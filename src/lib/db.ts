@@ -5,7 +5,7 @@
  */
 
 import Dexie, { type Table } from 'dexie';
-import type { Ajustes, Bloque, Plantilla } from './tipos';
+import type { Ajustes, Bloque, Campana, Objetivo, Plantilla } from './tipos';
 import { AJUSTES_DEFECTO } from './tipos';
 
 interface Kv {
@@ -16,6 +16,8 @@ interface Kv {
 class BaseDatos extends Dexie {
   bloques!: Table<Bloque, string>;
   plantillas!: Table<Plantilla, string>;
+  objetivos!: Table<Objetivo, string>;
+  campanas!: Table<Campana, string>;
   kv!: Table<Kv, string>;
 
   constructor() {
@@ -23,6 +25,14 @@ class BaseDatos extends Dexie {
     this.version(1).stores({
       bloques: 'id, fecha, [fecha+inicioMin]',
       plantillas: 'id',
+      kv: 'clave'
+    });
+    // F2: objetivos anuales y campañas mensuales
+    this.version(2).stores({
+      bloques: 'id, fecha, objetivoId, [fecha+inicioMin]',
+      plantillas: 'id',
+      objetivos: 'id, anio',
+      campanas: 'id, anio, [anio+mes]',
       kv: 'clave'
     });
   }
@@ -50,8 +60,16 @@ export async function leerAjustes(): Promise<Ajustes> {
   return { ...AJUSTES_DEFECTO, ...((fila?.valor as Partial<Ajustes>) ?? {}) };
 }
 
+/**
+ * IndexedDB clona con structured clone y los proxies de $state no son clonables:
+ * todo lo que se escribe pasa antes por aquí.
+ */
+export function plano<T>(v: T): T {
+  return JSON.parse(JSON.stringify(v)) as T;
+}
+
 export async function escribirAjustes(a: Ajustes): Promise<void> {
-  await db.kv.put({ clave: 'ajustes', valor: a });
+  await db.kv.put({ clave: 'ajustes', valor: plano(a) });
 }
 
 export function bloquesDe(fecha: string): Promise<Bloque[]> {
@@ -63,11 +81,25 @@ export function bloquesDeRango(fechas: string[]): Promise<Bloque[]> {
 }
 
 export function guardarBloque(b: Bloque): Promise<string> {
-  return db.bloques.put({ ...b, actualizado: Date.now() });
+  return db.bloques.put(plano({ ...b, actualizado: Date.now() }));
 }
 
 export function borrarBloque(id: string): Promise<void> {
   return db.bloques.delete(id);
+}
+
+export function objetivosDe(anio: number): Promise<Objetivo[]> {
+  return db.objetivos.where('anio').equals(anio).toArray();
+}
+
+export function campanasDe(anio: number): Promise<Campana[]> {
+  return db.campanas.where('anio').equals(anio).toArray();
+}
+
+/** Bloques de un mes completo, para pintar la carga en el mapa. */
+export function bloquesDeMes(anio: number, mes: number): Promise<Bloque[]> {
+  const pre = `${anio}-${`${mes}`.padStart(2, '0')}`;
+  return db.bloques.where('fecha').startsWith(pre).toArray();
 }
 
 export function nuevoId(): string {

@@ -1,11 +1,14 @@
 <script lang="ts">
   import Vista from '../lib/Vista.svelte';
+  import PlantillaHoja from '../lib/PlantillaHoja.svelte';
   import { estado } from '../lib/estado.svelte';
-  import type { Tramo } from '../lib/tipos';
+  import type { Plantilla, Tramo } from '../lib/tipos';
   import { hhmm } from '../lib/tiempo';
 
   const TRAMOS: Tramo[] = [5, 10, 15, 30];
   const HORAS = Array.from({ length: 13 }, (_, i) => i + 4); // 04:00 a 16:00 como inicio posible
+
+  let hoja = $state<{ plantilla: Plantilla | null } | null>(null);
 </script>
 
 <Vista titulo="Ideas y ajustes" sub="El banco de ideas llega en la próxima fase">
@@ -73,18 +76,25 @@
 
   <section>
     <h2>Plantillas</h2>
-    <p class="ayuda">Botones de un toque al crear un bloque. Editarlas y crear las tuyas llega en la próxima fase.</p>
+    <p class="ayuda">Botones de un toque al crear un bloque. Toca una para editarla.</p>
     <ul class="plantillas">
       {#each estado.plantillas as p (p.id)}
-        <li style="--c:{p.color}">
-          <span class="punto"></span>
-          <span class="nombre">{p.nombre}</span>
-          <span class="dur tabular">{p.duracionMin} min</span>
+        <li>
+          <button type="button" style="--c:{p.color}" onclick={() => (hoja = { plantilla: p })}>
+            <span class="punto"></span>
+            <span class="nombre">{p.nombre}</span>
+            <span class="dur tabular">{p.duracionMin} min</span>
+          </button>
         </li>
       {/each}
     </ul>
+    <button class="anadir" type="button" onclick={() => (hoja = { plantilla: null })}>+ Nueva plantilla</button>
   </section>
 </Vista>
+
+{#if hoja}
+  <PlantillaHoja plantilla={hoja.plantilla} onCerrar={() => (hoja = null)} />
+{/if}
 
 <style>
   section {
@@ -201,7 +211,8 @@
     gap: var(--sp-2);
   }
 
-  .plantillas li {
+  .plantillas button {
+    width: 100%;
     display: flex;
     align-items: center;
     gap: var(--sp-3);
@@ -209,6 +220,17 @@
     border-radius: var(--radius-sm);
     border: 1px solid var(--border);
     background: var(--surface);
+    text-align: left;
+  }
+
+  .anadir {
+    width: 100%;
+    min-height: 48px;
+    margin-top: var(--sp-2);
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--border);
+    color: var(--fg-muted);
+    font-weight: 500;
   }
 
   .punto {

@@ -18,6 +18,33 @@ export interface Bloque {
   energia: Energia;
   estado: EstadoBloque;
   nota?: string;
+  /** objetivo anual del que hereda el color; el año se ve en el minuto */
+  objetivoId?: string;
+  /** evento de hora fija: no se arrastra, se edita a mano */
+  fijo?: boolean;
+  actualizado: number;
+}
+
+export interface Objetivo {
+  id: string;
+  anio: number;
+  titulo: string;
+  color: string;
+  /** meta contable opcional, p. ej. 10000 seguidores */
+  meta?: number;
+  progreso?: number;
+  actualizado: number;
+}
+
+export interface Campana {
+  id: string;
+  anio: number;
+  /** 1-12 */
+  mes: number;
+  titulo: string;
+  objetivoId?: string;
+  meta?: number;
+  progreso?: number;
   actualizado: number;
 }
 
@@ -55,3 +82,19 @@ export const PX_POR_MIN: Record<Tramo, number> = {
 };
 
 export const MIN_BLOQUE = 5;
+
+export const COLORES_CAT = [
+  'var(--cat-1)',
+  'var(--cat-2)',
+  'var(--cat-3)',
+  'var(--cat-4)',
+  'var(--cat-5)',
+  'var(--cat-6)'
+];
+
+export const MESES = [
+  'Enero','Febrero','Marzo','Abril','Mayo','Junio',
+  'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'
+];
+
+export const MESES_CORTOS = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];

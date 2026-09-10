@@ -45,7 +45,14 @@
   let activoId: string | null = null;
   let movido = $state(false);
 
+  /** los eventos de hora fija no se arrastran: se tocan y se editan */
+  let tapFijo = $state(false);
+
   function abajo(e: PointerEvent, b: Bloque, m: Modo) {
+    if (b.fijo) {
+      tapFijo = true;
+      return;
+    }
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     y0 = e.clientY;
     baseInicio = b.inicioMin;
@@ -77,6 +84,11 @@
   }
 
   async function arriba(b: Bloque) {
+    if (tapFijo) {
+      tapFijo = false;
+      onEditar(b);
+      return;
+    }
     const p = previo;
     activoId = null;
     previo = null;
@@ -120,10 +132,11 @@
       class:curso={b.estado === 'en_curso'}
       class:arrastrando={previo?.id === b.id && movido}
       class:compacto={altoPx < 34}
-      style="top:{(v.inicioMin - inicioDia) * px}px; height:{Math.max(altoPx, 22)}px; --c:{b.color}"
+      class:fijo={b.fijo}
+      style="top:{(v.inicioMin - inicioDia) * px}px; height:{Math.max(altoPx, 22)}px; --c:{estado.colorDe(b)}"
       role="button"
       tabindex="0"
-      aria-label="{b.titulo}, {hhmm(v.inicioMin)}, {duracionLegible(v.duracionMin)}"
+      aria-label="{b.titulo}, {hhmm(v.inicioMin)}, {duracionLegible(v.duracionMin)}{b.fijo ? ', hora fija' : ''}"
       onpointerdown={(e) => abajo(e, b, 'mover')}
       onpointermove={mover}
       onpointerup={() => arriba(b)}
@@ -139,6 +152,7 @@
         <span class="tit">{b.titulo}</span>
         <span class="hora tabular">{hhmm(v.inicioMin)} · {duracionLegible(v.duracionMin)}</span>
       </div>
+      {#if !b.fijo}
       <div
         class="asa"
         role="slider"
@@ -159,6 +173,7 @@
       >
         <span></span>
       </div>
+      {/if}
     </div>
   {/each}
 </div>
@@ -240,6 +255,13 @@
   .arrastrando {
     z-index: 5;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  }
+
+  /* evento de hora fija: contorno sólido, sin relleno; se distingue sin leer */
+  .fijo {
+    background: var(--surface);
+    border: 2px solid var(--c);
+    border-left-width: 4px;
   }
 
   .hecho {

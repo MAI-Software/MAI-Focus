@@ -4,7 +4,7 @@
   import { estado } from './estado.svelte';
   import type { Bloque, Plantilla } from './tipos';
   import { MIN_BLOQUE } from './tipos';
-  import { duracionLegible, hhmm, limitar, snap } from './tiempo';
+  import { duracionLegible, fechaLarga, hhmm, limitar, snap, sumarDias } from './tiempo';
 
   let { bloque, onCerrar }: { bloque: Bloque | null; onCerrar: () => void } = $props();
 
@@ -24,7 +24,17 @@
   let inicioMin = $state(bloque?.inicioMin ?? estado.huecoSugerido(bloque?.duracionMin ?? estado.tramo));
   // svelte-ignore state_referenced_locally
   let nota = $state(bloque?.nota ?? '');
+  // svelte-ignore state_referenced_locally
+  let objetivoId = $state(bloque?.objetivoId ?? '');
+  // svelte-ignore state_referenced_locally
+  let fijo = $state(bloque?.fijo ?? false);
+  // svelte-ignore state_referenced_locally
+  let fecha = $state(bloque?.fecha ?? estado.fecha);
   let confirmandoBorrado = $state(false);
+
+  /** el objetivo manda sobre el color: el hilo del año llega hasta aquí */
+  const colorEfectivo = $derived(estado.objetivo(objetivoId)?.color ?? color);
+  const proximosDias = $derived(Array.from({ length: 14 }, (_, i) => sumarDias(estado.fecha, i - 1)));
 
   function aplicar(p: Plantilla) {
     tipo = p.id;
@@ -56,9 +66,15 @@
   async function guardar() {
     const t = titulo.trim() || 'Bloque';
     if (editando && bloque) {
-      await estado.actualizar(bloque.id, { titulo: t, tipo, color, duracionMin, inicioMin, nota });
+      await estado.actualizar(bloque.id, {
+        titulo: t, tipo, color, duracionMin, inicioMin, nota, fecha,
+        objetivoId: objetivoId || undefined, fijo
+      });
     } else {
-      await estado.crear({ titulo: t, tipo, color, duracionMin, inicioMin, nota });
+      await estado.crear({
+        titulo: t, tipo, color, duracionMin, inicioMin, nota, fecha,
+        objetivoId: objetivoId || undefined, fijo
+      });
     }
     onCerrar();
   }
@@ -111,6 +127,47 @@
   </div>
 
   <p class="pista tabular">{hhmm(inicioMin)} → {hhmm(inicioMin + duracionMin)}</p>
+
+  <div class="campo">
+    <label for="b-objetivo">Objetivo del año</label>
+    <select id="b-objetivo" bind:value={objetivoId}>
+      <option value="">Sin objetivo</option>
+      {#each estado.objetivos as o (o.id)}
+        <option value={o.id}>{o.titulo}</option>
+      {/each}
+    </select>
+    {#if objetivoId}
+      <p class="ayuda">
+        <span class="muestra" style="--c:{colorEfectivo}"></span>
+        Este bloque toma el color del objetivo.
+      </p>
+    {/if}
+  </div>
+
+  <div class="campo">
+    <label for="b-fecha">Día</label>
+    <select id="b-fecha" bind:value={fecha}>
+      {#each proximosDias as d (d)}
+        <option value={d}>{fechaLarga(d)}</option>
+      {/each}
+      {#if !proximosDias.includes(fecha)}
+        <option value={fecha}>{fechaLarga(fecha)}</option>
+      {/if}
+    </select>
+  </div>
+
+  <button
+    type="button"
+    class="conmutador"
+    class:activo={fijo}
+    role="switch"
+    aria-checked={fijo}
+    onclick={() => (fijo = !fijo)}
+  >
+    <span class="bola"></span>
+    <span class="etq-sw">Hora fija (directo, colaboración, lanzamiento)</span>
+  </button>
+  <p class="ayuda sep">Un bloque de hora fija no se arrastra sin querer: su hora se cambia aquí.</p>
 
   <div class="campo">
     <label for="b-nota">Anotaciones</label>
@@ -244,6 +301,86 @@
     text-align: center;
     font-size: var(--fs-sm);
     font-weight: 600;
+  }
+
+  .ayuda {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    margin: 0;
+    font-size: var(--fs-xs);
+    color: var(--fg-muted);
+  }
+
+  .ayuda.sep {
+    margin: var(--sp-2) 0 var(--sp-4);
+  }
+
+  .muestra {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--c);
+  }
+
+  select {
+    min-height: 48px;
+    padding: 0 var(--sp-2);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--fg);
+    font: inherit;
+    font-size: var(--fs-md);
+  }
+
+  .conmutador {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    width: 100%;
+    min-height: 48px;
+    padding: 0 var(--sp-3) 0 6px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    text-align: left;
+  }
+
+  .bola {
+    flex: none;
+    position: relative;
+    width: 36px;
+    height: 20px;
+    border-radius: 999px;
+    background: var(--surface);
+    transition: background var(--dur-in) var(--ease-out);
+  }
+
+  .bola::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--fg-muted);
+    transition: transform var(--dur-in) var(--ease-out);
+  }
+
+  .activo .bola {
+    background: color-mix(in srgb, var(--primary) 45%, var(--surface));
+  }
+
+  .activo .bola::after {
+    transform: translateX(16px);
+    background: var(--primary);
+  }
+
+  .etq-sw {
+    font-size: var(--fs-sm);
+    font-weight: 500;
   }
 
   .pista {

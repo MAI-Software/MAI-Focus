@@ -1,6 +1,6 @@
 # MAI-Focus — Organizador de contenido para redes (TDAH-first)
 
-> Estado: F1 entregada (día y semana reales con persistencia local). Repo privado `MAI-Software/MAI-Focus`. Web primero (PC + móvil), APK nativa después vía Capacitor.
+> Estado: F2 entregada (los tres horizontes con herencia de color). Repo público `MAI-Software/MAI-Focus`. Web primero (PC + móvil), APK nativa después vía Capacitor.
 
 ## 1. Qué es
 
@@ -147,7 +147,7 @@ reward(user_id, xp, desbloqueos[])
 |---|---|---|
 | F0 ✅ | Repo, Vite+TS, tokens de diseño, layout vertical, nav inferior | Esqueleto navegable |
 | F1 ✅ | Vista Hoy + Semana, bloques con snap al tramo, arrastrar/redimensionar, IndexedDB | Usable sin cuenta |
-| F2 | Mes + Año, objetivos y herencia de color, eventos | Los 3 horizontes |
+| F2 ✅ | Mes + Año, objetivos y herencia de color, eventos de hora fija, arrastre entre días, plantillas editables | Los 3 horizontes |
 | F3 | Sonido, animaciones, XP, rachas, modo Calma | Capa de recompensa |
 | F4 | Foco, pausas, ritual de desconexión, notificaciones | Capa TDAH completa |
 | F5 | Supabase auth + sync, migración de datos locales | Multi-dispositivo |
@@ -155,10 +155,10 @@ reward(user_id, xp, desbloqueos[])
 
 Despliegue web en Cloudflare Pages desde F1, para probar en el móvil real desde el principio.
 
-### Fuera de F1 (pendiente en F2)
-- Arrastrar bloques **entre días** en la vista Semana (ahora se mueve desde el editor con «Mover a mañana»).
-- Editar/crear plantillas propias (las 6 de fábrica ya funcionan como botón de un toque).
-- Banco de ideas, recurrencias y eventos de hora fija.
+### Fuera de F2 (pendiente)
+- Banco de ideas y recurrencias («Reel los martes»).
+- Progreso automático de objetivos y campañas a partir de los bloques hechos (ahora el contador se teclea a mano).
+- Capa de recompensa: sonido, XP, rachas (F3).
 
 ## 8. Lo que hace falta de ti (branding)
 
