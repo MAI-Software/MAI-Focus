@@ -2,7 +2,8 @@
   /** Alta/edición de un objetivo anual o de una campaña mensual. */
   import Hoja from './Hoja.svelte';
   import { estado } from './estado.svelte';
-  import type { Campana, Objetivo } from './tipos';
+  import SelectorMarca from './SelectorMarca.svelte';
+  import type { Campana, Forma, Objetivo } from './tipos';
   import { COLORES_CAT, MESES } from './tipos';
 
   let {
@@ -21,7 +22,11 @@
   // svelte-ignore state_referenced_locally
   let titulo = $state(valor?.titulo ?? '');
   // svelte-ignore state_referenced_locally
-  let color = $state((valor as Objetivo | null)?.color ?? COLORES_CAT[estado.objetivos.length % COLORES_CAT.length]);
+  let color = $state(
+    (valor as Objetivo | null)?.color ?? COLORES_CAT[estado.objetivos.length % COLORES_CAT.length].valor
+  );
+  // svelte-ignore state_referenced_locally
+  let forma = $state<Forma>((valor as Objetivo | null)?.forma ?? 'circulo');
   // svelte-ignore state_referenced_locally
   let objetivoId = $state((valor as Campana | null)?.objetivoId ?? '');
   // svelte-ignore state_referenced_locally
@@ -44,6 +49,7 @@
         id: valor?.id,
         titulo: t,
         color,
+        forma,
         meta: num(meta),
         progreso: num(progreso) ?? 0
       });
@@ -88,23 +94,11 @@
   </div>
 
   {#if esObjetivo}
-    <div class="campo">
-      <span class="etq">Color</span>
-      <p class="ayuda">Todo lo que cuelgue de este objetivo se pinta de este color, del año al bloque de 5 minutos.</p>
-      <div class="colores">
-        {#each COLORES_CAT as c (c)}
-          <button
-            type="button"
-            class="color"
-            class:sel={color === c}
-            style="--c:{c}"
-            aria-label="Color {c}"
-            aria-pressed={color === c}
-            onclick={() => (color = c)}
-          ></button>
-        {/each}
-      </div>
-    </div>
+    <SelectorMarca
+      bind:color
+      bind:forma
+      ayuda="Todo lo que cuelgue de este objetivo lleva esta marca, del año al bloque de cinco minutos."
+    />
   {:else}
     <div class="campo">
       <label for="m-obj">Objetivo del año</label>
@@ -161,16 +155,9 @@
     margin-bottom: var(--sp-4);
   }
 
-  label,
-  .etq {
+  label {
     font-size: var(--fs-sm);
     font-weight: 500;
-    color: var(--fg-muted);
-  }
-
-  .ayuda {
-    margin: 0;
-    font-size: var(--fs-xs);
     color: var(--fg-muted);
   }
 
@@ -184,24 +171,6 @@
     color: var(--fg);
     font: inherit;
     font-size: var(--fs-md);
-  }
-
-  .colores {
-    display: flex;
-    gap: var(--sp-2);
-    flex-wrap: wrap;
-  }
-
-  .color {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: var(--c);
-    border: 3px solid transparent;
-  }
-
-  .color.sel {
-    border-color: var(--fg);
   }
 
   .dos {

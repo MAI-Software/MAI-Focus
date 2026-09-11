@@ -20,13 +20,20 @@
   --destructive: #dc2626;
   --focus-ring: #f97316;
 
-  /* categorías (objetivo anual / tipo de contenido) */
-  --cat-1: #f43f5e;
-  --cat-2: #f97316;
-  --cat-3: #eab308;
-  --cat-4: #22c55e;
-  --cat-5: #38bdf8;
-  --cat-6: #a78bfa;
+  /* categorías (objetivo anual / tipo de contenido): 12 tonos repartidos por
+     la rueda, cada uno emparejado siempre con una forma para no depender del color */
+  --cat-1: #fb7185;  /* rosa */
+  --cat-2: #f97316;  /* naranja */
+  --cat-3: #eab308;  /* ámbar */
+  --cat-4: #a3e635;  /* lima */
+  --cat-5: #22c55e;  /* verde */
+  --cat-6: #2dd4bf;  /* turquesa */
+  --cat-7: #38bdf8;  /* cian */
+  --cat-8: #60a5fa;  /* azul */
+  --cat-9: #a78bfa;  /* violeta */
+  --cat-10: #e879f9; /* magenta */
+  --cat-11: #d6a76a; /* arena */
+  --cat-12: #94a3b8; /* pizarra */
 
   /* escala tipográfica */
   --fs-xs: 0.75rem;
@@ -76,6 +83,19 @@
   --fg-muted: #475569;
   --border: rgba(15, 23, 42, 0.12);
   --primary-accion: #9a3412;
+  /* sobre blanco los tonos claros se pierden: bajan medio paso */
+  --cat-1: #e11d48;
+  --cat-2: #ea580c;
+  --cat-3: #a16207;
+  --cat-4: #4d7c0f;
+  --cat-5: #15803d;
+  --cat-6: #0f766e;
+  --cat-7: #0369a1;
+  --cat-8: #1d4ed8;
+  --cat-9: #6d28d9;
+  --cat-10: #a21caf;
+  --cat-11: #92400e;
+  --cat-12: #475569;
   color-scheme: light;
 }
 

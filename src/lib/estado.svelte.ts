@@ -15,7 +15,7 @@ import {
   plano,
   sembrarPlantillas
 } from './db';
-import type { Ajustes, Bloque, Campana, Objetivo, Plantilla, Tramo } from './tipos';
+import type { Ajustes, Bloque, Campana, Forma, Objetivo, Plantilla, Tramo } from './tipos';
 import { AJUSTES_DEFECTO, MIN_BLOQUE } from './tipos';
 import { ahoraMin, desdeISO, hoyISO, limitar, semanaDe, snap, sumarDias } from './tiempo';
 
@@ -131,9 +131,13 @@ class Estado {
     return id ? this.objetivos.find((o) => o.id === id) : undefined;
   }
 
-  /** El color siempre lo manda el objetivo si el bloque cuelga de uno. */
+  /** El color y la forma los manda el objetivo si el bloque cuelga de uno. */
   colorDe(b: Bloque): string {
     return this.objetivo(b.objetivoId)?.color ?? b.color;
+  }
+
+  formaDe(b: Bloque): Forma {
+    return this.objetivo(b.objetivoId)?.forma ?? b.forma ?? 'circulo';
   }
 
   // --- bloques ----------------------------------------------------------
@@ -150,6 +154,7 @@ class Estado {
       energia: datos.energia ?? 'media',
       estado: 'pendiente',
       nota: datos.nota,
+      forma: datos.forma ?? 'circulo',
       objetivoId: datos.objetivoId,
       fijo: datos.fijo ?? false,
       actualizado: Date.now()
@@ -202,6 +207,7 @@ class Estado {
       anio: o.anio ?? this.anio,
       titulo: o.titulo,
       color: o.color,
+      forma: o.forma ?? 'circulo',
       meta: o.meta,
       progreso: o.progreso ?? 0,
       actualizado: Date.now()
@@ -212,10 +218,17 @@ class Estado {
 
   /** Al borrar un objetivo los bloques no se borran: se quedan huérfanos con su color propio. */
   async borrarObjetivo(id: string) {
-    const color = this.objetivos.find((o) => o.id === id)?.color;
+    const previo = this.objetivos.find((o) => o.id === id);
     const hijos = await db.bloques.where('objetivoId').equals(id).toArray();
     await Promise.all(
-      hijos.map((b) => guardarBloque({ ...b, objetivoId: undefined, color: color ?? b.color }))
+      hijos.map((b) =>
+        guardarBloque({
+          ...b,
+          objetivoId: undefined,
+          color: previo?.color ?? b.color,
+          forma: previo?.forma ?? b.forma
+        })
+      )
     );
     await db.campanas.where('anio').equals(this.anio).modify((c) => {
       if (c.objetivoId === id) c.objetivoId = undefined;
@@ -251,6 +264,7 @@ class Estado {
       id: p.id ?? nuevoId(),
       nombre: p.nombre,
       color: p.color,
+      forma: p.forma ?? 'circulo',
       duracionMin: p.duracionMin,
       energia: p.energia ?? 'media',
       fabrica: p.fabrica

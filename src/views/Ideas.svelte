@@ -1,6 +1,7 @@
 <script lang="ts">
   import Vista from '../lib/Vista.svelte';
   import PlantillaHoja from '../lib/PlantillaHoja.svelte';
+  import Marca from '../lib/Marca.svelte';
   import { estado } from '../lib/estado.svelte';
   import { exportarCopia, importarCopia } from '../lib/db';
   import type { Plantilla, Tramo } from '../lib/tipos';
@@ -126,8 +127,8 @@
     <ul class="plantillas">
       {#each estado.plantillas as p (p.id)}
         <li>
-          <button type="button" style="--c:{p.color}" onclick={() => (hoja = { plantilla: p })}>
-            <span class="punto"></span>
+          <button type="button" onclick={() => (hoja = { plantilla: p })}>
+            <Marca forma={p.forma ?? 'circulo'} color={p.color} size={15} />
             <span class="nombre">{p.nombre}</span>
             <span class="dur tabular">{p.duracionMin} min</span>
           </button>
@@ -313,13 +314,6 @@
     border: 1px dashed var(--border);
     color: var(--fg-muted);
     font-weight: 500;
-  }
-
-  .punto {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--c);
   }
 
   .nombre {

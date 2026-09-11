@@ -1,6 +1,7 @@
 <script lang="ts">
   import Vista from '../lib/Vista.svelte';
   import BloqueHoja from '../lib/BloqueHoja.svelte';
+  import Marca from '../lib/Marca.svelte';
   import { estado } from '../lib/estado.svelte';
   import { router } from '../lib/router.svelte';
   import type { Bloque } from '../lib/tipos';
@@ -122,6 +123,7 @@
                   }
                 }}
               >
+                <Marca forma={estado.formaDe(b)} color={estado.colorDe(b)} size={12} />
                 <span class="hora tabular">{hhmm(b.inicioMin)}</span>
                 <span class="tit">{b.titulo}</span>
               </div>

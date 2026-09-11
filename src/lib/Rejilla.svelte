@@ -3,6 +3,7 @@
    * Rejilla del día: escala real de tiempo (un minuto siempre mide lo mismo),
    * bloques arrastrables y redimensionables con snap al tramo configurado.
    */
+  import Marca from './Marca.svelte';
   import type { Bloque } from './tipos';
   import { MIN_BLOQUE, PX_POR_MIN } from './tipos';
   import { estado } from './estado.svelte';
@@ -197,7 +198,10 @@
       }}
     >
       <div class="txt">
-        <span class="tit">{b.titulo}</span>
+        <span class="tit">
+          <Marca forma={estado.formaDe(b)} color={estado.colorDe(b)} size={12} />
+          {b.titulo}
+        </span>
         <span class="hora tabular">{hhmm(v.inicioMin)} · {duracionLegible(v.duracionMin)}</span>
       </div>
       {#if !b.fijo}
@@ -333,6 +337,9 @@
   }
 
   .tit {
+    display: flex;
+    align-items: center;
+    gap: 5px;
     font-size: var(--fs-sm);
     font-weight: 600;
     white-space: nowrap;

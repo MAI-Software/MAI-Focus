@@ -41,12 +41,12 @@ class BaseDatos extends Dexie {
 export const db = new BaseDatos();
 
 export const PLANTILLAS_FABRICA: Plantilla[] = [
-  { id: 'guion', nombre: 'Guion', color: 'var(--cat-6)', duracionMin: 30, energia: 'alta', fabrica: true },
-  { id: 'grabar', nombre: 'Grabar', color: 'var(--cat-1)', duracionMin: 60, energia: 'alta', fabrica: true },
-  { id: 'editar', nombre: 'Editar', color: 'var(--cat-5)', duracionMin: 90, energia: 'media', fabrica: true },
-  { id: 'miniatura', nombre: 'Miniatura', color: 'var(--cat-3)', duracionMin: 30, energia: 'media', fabrica: true },
-  { id: 'publicar', nombre: 'Publicar', color: 'var(--cat-4)', duracionMin: 15, energia: 'baja', fabrica: true },
-  { id: 'pausa', nombre: 'Pausa', color: 'var(--cat-2)', duracionMin: 10, energia: 'baja', fabrica: true }
+  { id: 'guion', nombre: 'Guion', color: 'var(--cat-9)', forma: 'cuadrado', duracionMin: 30, energia: 'alta', fabrica: true },
+  { id: 'grabar', nombre: 'Grabar', color: 'var(--cat-1)', forma: 'circulo', duracionMin: 60, energia: 'alta', fabrica: true },
+  { id: 'editar', nombre: 'Editar', color: 'var(--cat-7)', forma: 'rombo', duracionMin: 90, energia: 'media', fabrica: true },
+  { id: 'miniatura', nombre: 'Miniatura', color: 'var(--cat-3)', forma: 'triangulo', duracionMin: 30, energia: 'media', fabrica: true },
+  { id: 'publicar', nombre: 'Publicar', color: 'var(--cat-5)', forma: 'estrella', duracionMin: 15, energia: 'baja', fabrica: true },
+  { id: 'pausa', nombre: 'Pausa', color: 'var(--cat-6)', forma: 'anillo', duracionMin: 10, energia: 'baja', fabrica: true }
 ];
 
 export async function sembrarPlantillas(): Promise<void> {

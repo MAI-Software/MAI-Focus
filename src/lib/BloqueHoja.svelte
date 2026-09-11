@@ -1,8 +1,10 @@
 <script lang="ts">
   /** Crear o editar un bloque. Mismo formulario para los dos casos: menos que aprender. */
   import Hoja from './Hoja.svelte';
+  import Marca from './Marca.svelte';
+  import SelectorMarca from './SelectorMarca.svelte';
   import { estado } from './estado.svelte';
-  import type { Bloque, Plantilla } from './tipos';
+  import type { Bloque, Forma, Plantilla } from './tipos';
   import { MIN_BLOQUE } from './tipos';
   import { duracionLegible, fechaLarga, hhmm, limitar, snap, sumarDias } from './tiempo';
 
@@ -30,6 +32,8 @@
   let fijo = $state(bloque?.fijo ?? false);
   // svelte-ignore state_referenced_locally
   let fecha = $state(bloque?.fecha ?? estado.fecha);
+  // svelte-ignore state_referenced_locally
+  let forma = $state<Forma>(bloque?.forma ?? 'circulo');
   let confirmandoBorrado = $state(false);
 
   /** el objetivo manda sobre el color: el hilo del año llega hasta aquí */
@@ -39,6 +43,7 @@
   function aplicar(p: Plantilla) {
     tipo = p.id;
     color = p.color;
+    forma = p.forma ?? 'circulo';
     if (!editando) {
       duracionMin = p.duracionMin;
       if (!titulo.trim()) titulo = p.nombre;
@@ -67,12 +72,12 @@
     const t = titulo.trim() || 'Bloque';
     if (editando && bloque) {
       await estado.actualizar(bloque.id, {
-        titulo: t, tipo, color, duracionMin, inicioMin, nota, fecha,
+        titulo: t, tipo, color, forma, duracionMin, inicioMin, nota, fecha,
         objetivoId: objetivoId || undefined, fijo
       });
     } else {
       await estado.crear({
-        titulo: t, tipo, color, duracionMin, inicioMin, nota, fecha,
+        titulo: t, tipo, color, forma, duracionMin, inicioMin, nota, fecha,
         objetivoId: objetivoId || undefined, fijo
       });
     }
@@ -97,7 +102,7 @@
           style="--c:{p.color}"
           onclick={() => aplicar(p)}
         >
-          <span class="punto" aria-hidden="true"></span>
+          <Marca forma={p.forma ?? 'circulo'} color={p.color} size={13} />
           {p.nombre}
         </button>
       {/each}
@@ -138,11 +143,15 @@
     </select>
     {#if objetivoId}
       <p class="ayuda">
-        <span class="muestra" style="--c:{colorEfectivo}"></span>
-        Este bloque toma el color del objetivo.
+        <Marca forma={estado.objetivo(objetivoId)?.forma ?? 'circulo'} color={colorEfectivo} size={14} />
+        Este bloque toma la marca del objetivo.
       </p>
     {/if}
   </div>
+
+  {#if !objetivoId}
+    <SelectorMarca bind:color bind:forma />
+  {/if}
 
   <div class="campo">
     <label for="b-fecha">Día</label>
@@ -263,13 +272,6 @@
     font-weight: 500;
   }
 
-  .chip .punto {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--c);
-  }
-
   .chip.sel {
     border-color: var(--c);
     background: color-mix(in srgb, var(--c) 22%, var(--surface-2));
@@ -314,13 +316,6 @@
 
   .ayuda.sep {
     margin: var(--sp-2) 0 var(--sp-4);
-  }
-
-  .muestra {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--c);
   }
 
   select {

@@ -3,6 +3,16 @@
 export type EstadoBloque = 'pendiente' | 'en_curso' | 'hecho' | 'movido' | 'saltado';
 export type Energia = 'baja' | 'media' | 'alta';
 export type Tramo = 5 | 10 | 15 | 30;
+export type Forma =
+  | 'circulo'
+  | 'cuadrado'
+  | 'triangulo'
+  | 'rombo'
+  | 'hexagono'
+  | 'estrella'
+  | 'gota'
+  | 'anillo'
+  | 'barra';
 
 export interface Bloque {
   id: string;
@@ -22,6 +32,8 @@ export interface Bloque {
   objetivoId?: string;
   /** evento de hora fija: no se arrastra, se edita a mano */
   fijo?: boolean;
+  /** forma de la marca; se hereda del objetivo si el bloque cuelga de uno */
+  forma?: Forma;
   actualizado: number;
 }
 
@@ -30,6 +42,7 @@ export interface Objetivo {
   anio: number;
   titulo: string;
   color: string;
+  forma?: Forma;
   /** meta contable opcional, p. ej. 10000 seguidores */
   meta?: number;
   progreso?: number;
@@ -52,6 +65,7 @@ export interface Plantilla {
   id: string;
   nombre: string;
   color: string;
+  forma?: Forma;
   duracionMin: number;
   energia: Energia;
   /** de fábrica: editable pero se restaura si se borra todo */
@@ -83,14 +97,40 @@ export const PX_POR_MIN: Record<Tramo, number> = {
 
 export const MIN_BLOQUE = 5;
 
-export const COLORES_CAT = [
-  'var(--cat-1)',
-  'var(--cat-2)',
-  'var(--cat-3)',
-  'var(--cat-4)',
-  'var(--cat-5)',
-  'var(--cat-6)'
+export const COLORES_CAT: { valor: string; nombre: string }[] = [
+  { valor: 'var(--cat-1)', nombre: 'Rosa' },
+  { valor: 'var(--cat-2)', nombre: 'Naranja' },
+  { valor: 'var(--cat-3)', nombre: 'Ámbar' },
+  { valor: 'var(--cat-4)', nombre: 'Lima' },
+  { valor: 'var(--cat-5)', nombre: 'Verde' },
+  { valor: 'var(--cat-6)', nombre: 'Turquesa' },
+  { valor: 'var(--cat-7)', nombre: 'Cian' },
+  { valor: 'var(--cat-8)', nombre: 'Azul' },
+  { valor: 'var(--cat-9)', nombre: 'Violeta' },
+  { valor: 'var(--cat-10)', nombre: 'Magenta' },
+  { valor: 'var(--cat-11)', nombre: 'Arena' },
+  { valor: 'var(--cat-12)', nombre: 'Pizarra' }
 ];
+
+export const FORMAS: { valor: Forma; nombre: string }[] = [
+  { valor: 'circulo', nombre: 'Círculo' },
+  { valor: 'cuadrado', nombre: 'Cuadrado' },
+  { valor: 'triangulo', nombre: 'Triángulo' },
+  { valor: 'rombo', nombre: 'Rombo' },
+  { valor: 'hexagono', nombre: 'Hexágono' },
+  { valor: 'estrella', nombre: 'Estrella' },
+  { valor: 'gota', nombre: 'Gota' },
+  { valor: 'anillo', nombre: 'Anillo' },
+  { valor: 'barra', nombre: 'Barra' }
+];
+
+export function nombreColor(valor: string): string {
+  return COLORES_CAT.find((c) => c.valor === valor)?.nombre ?? 'Color';
+}
+
+export function nombreForma(valor: Forma): string {
+  return FORMAS.find((f) => f.valor === valor)?.nombre ?? 'Forma';
+}
 
 export const MESES = [
   'Enero','Febrero','Marzo','Abril','Mayo','Junio',

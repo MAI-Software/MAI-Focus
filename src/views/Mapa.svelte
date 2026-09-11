@@ -1,6 +1,7 @@
 <script lang="ts">
   import Vista from '../lib/Vista.svelte';
   import MetaHoja from '../lib/MetaHoja.svelte';
+  import Marca from '../lib/Marca.svelte';
   import { estado } from '../lib/estado.svelte';
   import { router } from '../lib/router.svelte';
   import type { Campana, Objetivo } from '../lib/tipos';
@@ -30,6 +31,10 @@
 
   function colorCampana(c: Campana): string {
     return estado.objetivo(c.objetivoId)?.color ?? 'var(--fg-muted)';
+  }
+
+  function formaCampana(c: Campana) {
+    return estado.objetivo(c.objetivoId)?.forma ?? 'anillo';
   }
 
   async function abrirDia(f: string) {
@@ -73,7 +78,7 @@
         {#each campanasMes as c (c.id)}
           <li>
             <button type="button" style="--c:{colorCampana(c)}" onclick={() => (hoja = { tipo: 'campana', valor: c })}>
-              <span class="punto"></span>
+              <Marca forma={formaCampana(c)} color={colorCampana(c)} size={15} />
               <span class="txt">
                 <span class="tit">{c.titulo}</span>
                 {#if estado.objetivo(c.objetivoId)}
@@ -132,7 +137,7 @@
         {#each estado.objetivos as o (o.id)}
           <li>
             <button type="button" style="--c:{o.color}" onclick={() => (hoja = { tipo: 'objetivo', valor: o })}>
-              <span class="punto"></span>
+              <Marca forma={o.forma ?? 'circulo'} color={o.color} size={15} />
               <span class="txt">
                 <span class="tit">{o.titulo}</span>
                 {#if o.meta}
@@ -168,7 +173,7 @@
           {#if cs.length}
             <span class="puntos">
               {#each cs.slice(0, 4) as c (c.id)}
-                <span class="mini" style="--c:{colorCampana(c)}"></span>
+                <Marca forma={formaCampana(c)} color={colorCampana(c)} size={9} />
               {/each}
             </span>
           {:else}
@@ -264,14 +269,6 @@
     border: 1px solid var(--border);
     background: var(--surface);
     text-align: left;
-  }
-
-  .punto {
-    flex: none;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: var(--c);
   }
 
   .txt {
@@ -405,13 +402,6 @@
   .puntos {
     display: flex;
     gap: 3px;
-  }
-
-  .mini {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--c);
   }
 
   .sin {

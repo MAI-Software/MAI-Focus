@@ -89,11 +89,15 @@ Consultado con `ui-ux-pro-max` (estilo **Micro-interactions**, tipografía **Int
 --destructive: #DC2626;  /* solo borrar de verdad */
 ```
 
-Colores de categoría (objetivos anuales / tipo de contenido) — 6 fijos, alto croma sobre oscuro, verificar con simulador de daltonismo:
+Colores de categoría (objetivos anuales / plantillas / bloques sueltos) — **12 tonos** repartidos por la rueda, con variante más oscura para el tema claro:
 
-`#F43F5E` rosa · `#F97316` naranja · `#EAB308` amarillo · `#22C55E` verde · `#38BDF8` cian · `#A78BFA` violeta.
+rosa · naranja · ámbar · lima · verde · turquesa · cian · azul · violeta · magenta · arena · pizarra.
 
-Regla: el color **nunca** es el único portador de significado — siempre acompaña icono o texto (`color-not-only`).
+**Formas de etiqueta** — cada etiqueta combina color **y** forma, y la forma es la que trabaja cuando el color no llega (daltonismo, sol en la pantalla, dos categorías vecinas):
+
+círculo · cuadrado · triángulo · rombo · hexágono · estrella · gota · anillo · barra.
+
+108 combinaciones. La marca se hereda igual que el color: objetivo → campaña → bloque. Regla: el color **nunca** es el único portador de significado (`color-not-only`).
 
 ### Tipografía
 - Inter (300/400/500/600/700), `display=swap`.
