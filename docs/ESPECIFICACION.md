@@ -64,7 +64,19 @@ Distinto de bloque de trabajo: hora fija, no arrastrable sin confirmación (dire
 - **Tope diario**: aviso al superar X horas planificadas (previene el plan imposible que genera culpa).
 - **Detox de publicación**: franjas "sin redes" que bloquean la sugerencia de tareas de interacción.
 
-### 4.4 Recompensa
+### 4.4 Órdenes por voz y modo razonamiento
+
+Botón de micrófono junto al «+» de la vista Hoy. Se dicta (o se escribe) una orden en lenguaje normal y la app **enseña lo que ha entendido antes de tocar nada**: acción, bloque afectado, de cuándo a cuándo, choques con otros bloques. Solo se aplica al confirmar.
+
+- **Todo local.** El análisis es un módulo de la app (`lenguaje.ts`): sin red, sin clave de API y sin mandar a ningún sitio lo que dictas. El dictado usa el reconocedor del propio navegador.
+- **Entiende:** mover, crear, borrar, marcar hecho y alargar/acortar. Horas (`18:00`, «a las seis y media de la tarde»), días (hoy, mañana, pasado mañana, el martes, 15/09) y duraciones («media hora», «hora y media», «45 minutos»).
+- **Ejemplo de referencia:** «cambia mi reunión de hoy de las 18:00 para mañana a las 16:00» → mueve ese bloque y avisa si el destino choca con otro.
+- **Cuando duda no adivina:** si encajan varios bloques, los lista para elegir; si falta un dato, lo marca en ámbar; si no reconoce el verbo, lo dice y propone cómo decirlo.
+- «Hoy» y «mañana» son siempre el día real, no el día que estés mirando en la app.
+- Si el navegador no dicta (o el usuario prefiere teclear), la misma hoja acepta la orden escrita: la función no depende del micro.
+- **Pendiente para la APK:** el WebView de Android no trae la API de voz del navegador; hace falta el plugin `@capacitor-community/speech-recognition` (la orden escrita funciona igual sin él).
+
+### 4.5 Recompensa
 - Al completar bloque: sonido corto (<300 ms), animación de sello/pop (150–300 ms), +XP proporcional a los minutos.
 - Racha diaria con 2 "vidas" por semana (no se pierde por un día malo).
 - Hitos: al completar una campaña mensual → animación grande + desbloqueo cosmético (tema / paleta / pack de sonido).

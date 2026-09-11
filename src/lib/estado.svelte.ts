@@ -15,9 +15,10 @@ import {
   plano,
   sembrarPlantillas
 } from './db';
+import type { Lectura } from './lenguaje';
 import type { Ajustes, Bloque, Campana, Forma, Objetivo, Plantilla, Tramo } from './tipos';
 import { AJUSTES_DEFECTO, MIN_BLOQUE } from './tipos';
-import { ahoraMin, desdeISO, hoyISO, limitar, semanaDe, snap, sumarDias } from './tiempo';
+import { ahoraMin, desdeISO, duracionLegible, fechaLarga, hhmm, hoyISO, limitar, semanaDe, snap, sumarDias } from './tiempo';
 
 class Estado {
   ajustes = $state<Ajustes>({ ...AJUSTES_DEFECTO });
@@ -198,6 +199,47 @@ class Estado {
 
   async empezar(id: string) {
     await this.actualizar(id, { estado: 'en_curso' });
+  }
+
+  /**
+   * Ejecuta lo que el analizador entendió y devuelve en una frase qué ha pasado,
+   * para que el usuario lo lea y no tenga que ir a comprobarlo.
+   */
+  async aplicarLectura(l: Lectura): Promise<string> {
+    if (l.accion === 'crear') {
+      const b = await this.crear({
+        titulo: l.titulo ?? 'Bloque',
+        fecha: l.fechaDestino,
+        inicioMin: l.inicioDestino,
+        duracionMin: l.duracionDestino
+      });
+      await this.irA(b.fecha);
+      return `Creado «${b.titulo}» el ${fechaLarga(b.fecha)} a las ${hhmm(b.inicioMin)}.`;
+    }
+
+    const b = l.objetivo;
+    if (!b) return 'No he podido aplicarlo.';
+
+    if (l.accion === 'borrar') {
+      await this.borrar(b.id);
+      return `Borrado «${b.titulo}».`;
+    }
+    if (l.accion === 'completar') {
+      await this.actualizar(b.id, { estado: 'hecho' });
+      return `«${b.titulo}» marcado como hecho.`;
+    }
+    if (l.accion === 'duracion' && l.duracionDestino) {
+      await this.actualizar(b.id, { duracionMin: l.duracionDestino });
+      return `«${b.titulo}» pasa a durar ${duracionLegible(l.duracionDestino)}.`;
+    }
+    if (l.accion === 'mover') {
+      const fecha = l.fechaDestino ?? b.fecha;
+      const inicio = l.inicioDestino ?? b.inicioMin;
+      await this.actualizar(b.id, { fecha, inicioMin: inicio, estado: 'pendiente' });
+      await this.irA(fecha);
+      return `«${b.titulo}» movido al ${fechaLarga(fecha)} a las ${hhmm(inicio)}.`;
+    }
+    return 'No he podido aplicarlo.';
   }
 
   // --- objetivos y campañas --------------------------------------------

@@ -2,12 +2,14 @@
   import Vista from '../lib/Vista.svelte';
   import Rejilla from '../lib/Rejilla.svelte';
   import BloqueHoja from '../lib/BloqueHoja.svelte';
+  import VozHoja from '../lib/VozHoja.svelte';
   import { estado } from '../lib/estado.svelte';
   import type { Bloque } from '../lib/tipos';
   import { PX_POR_MIN } from '../lib/tipos';
   import { duracionLegible, etiquetaRelativa, fechaLarga, hhmm, hoyISO, sumarDias } from '../lib/tiempo';
 
   let hoja = $state<{ abierta: boolean; bloque: Bloque | null }>({ abierta: false, bloque: null });
+  let voz = $state(false);
 
   const actual = $derived(estado.actual);
   const siguiente = $derived(estado.siguiente);
@@ -68,11 +70,22 @@
   <Rejilla bloques={estado.bloques} onEditar={abrirBloque} />
 </Vista>
 
+<button class="fab micro" type="button" onclick={() => (voz = true)} aria-label="Ordenar por voz">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+    <rect x="9" y="2.5" width="6" height="11.5" rx="3" />
+    <path d="M5 11.5a7 7 0 0 0 14 0M12 18.5V21.5M8.5 21.5h7" />
+  </svg>
+</button>
+
 <button class="fab" type="button" onclick={abrirNuevo} aria-label="Añadir bloque">
   <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
     <path d="M12 5v14M5 12h14" />
   </svg>
 </button>
+
+{#if voz}
+  <VozHoja onCerrar={() => (voz = false)} />
+{/if}
 
 {#if hoja.abierta}
   <BloqueHoja bloque={hoja.bloque} onCerrar={() => (hoja = { abierta: false, bloque: null })} />
@@ -182,5 +195,16 @@
 
   .fab:active {
     transform: scale(0.94);
+  }
+
+  /* el micro va al lado del +, no lo sustituye: dictar es un atajo, no el camino */
+  .micro {
+    right: calc(var(--sp-4) + 68px);
+    width: 52px;
+    height: 52px;
+    background: var(--surface);
+    color: var(--fg);
+    border: 1px solid var(--border);
+    box-shadow: 0 6px 20px rgba(2, 6, 23, 0.35);
   }
 </style>
