@@ -53,6 +53,15 @@ class Estado {
     if (this.listo) await this.recargarMapa();
   }
 
+  /** Tras importar una copia: todo lo que vive en memoria se vuelve a leer del disco. */
+  async recargarTodo() {
+    this.ajustes = await leerAjustes();
+    this.plantillas = await db.plantillas.toArray();
+    await this.recargar();
+    await this.recargarMapa();
+    this.aplicarCalma();
+  }
+
   async recargarMapa() {
     this.objetivos = await objetivosDe(this.anio);
     this.campanas = await campanasDe(this.anio);

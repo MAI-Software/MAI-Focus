@@ -215,7 +215,7 @@
     min-height: 52px;
     margin-top: var(--sp-2);
     border-radius: var(--radius);
-    background: var(--primary);
+    background: var(--primary-accion);
     color: var(--on-primary);
     font-weight: 600;
   }

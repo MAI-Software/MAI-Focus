@@ -155,7 +155,7 @@
     min-height: 48px;
     margin-top: var(--sp-3);
     border-radius: var(--radius-sm);
-    background: var(--primary);
+    background: var(--primary-accion);
     color: var(--on-primary);
     font-weight: 600;
   }
@@ -174,7 +174,7 @@
     width: 56px;
     height: 56px;
     border-radius: 18px;
-    background: var(--primary);
+    background: var(--primary-accion);
     color: var(--on-primary);
     box-shadow: 0 6px 20px rgba(234, 88, 12, 0.35);
     transition: transform var(--dur-out) var(--ease-out);

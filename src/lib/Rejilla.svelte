@@ -105,6 +105,49 @@
   function vista(b: Bloque) {
     return previo?.id === b.id ? { ...b, ...previo } : b;
   }
+
+  /**
+   * Reparto en carriles: los bloques que se solapan comparten el ancho en vez de
+   * taparse. Cada grupo de solape calcula cuántos carriles necesita y cada bloque
+   * se mete en el primero que ya esté libre a su hora.
+   */
+  const carriles = $derived.by(() => {
+    const mapa = new Map<string, { carril: number; total: number }>();
+    const orden = bloques
+      .map(vista)
+      .sort((a, b) => a.inicioMin - b.inicioMin || b.duracionMin - a.duracionMin);
+
+    let grupo: typeof orden = [];
+    let finGrupo = -1;
+
+    const cerrarGrupo = () => {
+      if (!grupo.length) return;
+      const finDeCarril: number[] = [];
+      const asignado = new Map<string, number>();
+      for (const b of grupo) {
+        let c = finDeCarril.findIndex((fin) => fin <= b.inicioMin);
+        if (c === -1) {
+          c = finDeCarril.length;
+          finDeCarril.push(0);
+        }
+        finDeCarril[c] = b.inicioMin + b.duracionMin;
+        asignado.set(b.id, c);
+      }
+      for (const b of grupo) {
+        mapa.set(b.id, { carril: asignado.get(b.id) ?? 0, total: finDeCarril.length });
+      }
+      grupo = [];
+      finGrupo = -1;
+    };
+
+    for (const b of orden) {
+      if (grupo.length && b.inicioMin >= finGrupo) cerrarGrupo();
+      grupo.push(b);
+      finGrupo = Math.max(finGrupo, b.inicioMin + b.duracionMin);
+    }
+    cerrarGrupo();
+    return mapa;
+  });
 </script>
 
 <div class="rejilla" style="height:{alto}px">
@@ -126,6 +169,7 @@
   {#each bloques as b (b.id)}
     {@const v = vista(b)}
     {@const altoPx = v.duracionMin * px}
+    {@const car = carriles.get(b.id) ?? { carril: 0, total: 1 }}
     <div
       class="bloque"
       class:hecho={b.estado === 'hecho'}
@@ -133,10 +177,14 @@
       class:arrastrando={previo?.id === b.id && movido}
       class:compacto={altoPx < 34}
       class:fijo={b.fijo}
-      style="top:{(v.inicioMin - inicioDia) * px}px; height:{Math.max(altoPx, 22)}px; --c:{estado.colorDe(b)}"
+      style="top:{(v.inicioMin - inicioDia) * px}px; height:{Math.max(altoPx, 22)}px; left:{(car.carril /
+        car.total) *
+        100}%; width:calc({100 / car.total}% - 3px); --c:{estado.colorDe(b)}"
       role="button"
       tabindex="0"
-      aria-label="{b.titulo}, {hhmm(v.inicioMin)}, {duracionLegible(v.duracionMin)}{b.fijo ? ', hora fija' : ''}"
+      aria-label="{b.titulo}, {hhmm(v.inicioMin)}, {duracionLegible(v.duracionMin)}{b.fijo
+        ? ', hora fija'
+        : ''}{car.total > 1 ? `, solapa con ${car.total - 1} más` : ''}"
       onpointerdown={(e) => abajo(e, b, 'mover')}
       onpointermove={mover}
       onpointerup={() => arriba(b)}
@@ -234,8 +282,7 @@
 
   .bloque {
     position: absolute;
-    left: 0;
-    right: 0;
+    /* left y width los pone el reparto en carriles */
     display: flex;
     align-items: flex-start;
     padding: 4px var(--sp-2);

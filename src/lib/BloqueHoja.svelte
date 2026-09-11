@@ -393,7 +393,7 @@
     width: 100%;
     min-height: 52px;
     border-radius: var(--radius);
-    background: var(--primary);
+    background: var(--primary-accion);
     color: var(--on-primary);
     font-size: var(--fs-md);
     font-weight: 600;

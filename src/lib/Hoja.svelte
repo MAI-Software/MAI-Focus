@@ -11,6 +11,25 @@
   function tecla(e: KeyboardEvent) {
     if (e.key === 'Escape') onCerrar();
   }
+
+  /**
+   * La hoja ocupa una entrada del historial: así el gesto atrás de Android
+   * la cierra en vez de salirse de la app.
+   */
+  $effect(() => {
+    history.pushState({ hoja: true }, '');
+    let enPila = true;
+    const alVolver = () => {
+      enPila = false;
+      onCerrar();
+    };
+    window.addEventListener('popstate', alVolver);
+    return () => {
+      window.removeEventListener('popstate', alVolver);
+      // cerrada desde la interfaz: retiramos nuestra entrada del historial
+      if (enPila) history.back();
+    };
+  });
 </script>
 
 <svelte:window onkeydown={tecla} />

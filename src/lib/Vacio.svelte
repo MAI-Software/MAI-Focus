@@ -26,7 +26,7 @@
     min-height: 48px;
     padding: 0 var(--sp-5);
     border-radius: var(--radius);
-    background: var(--primary);
+    background: var(--primary-accion);
     color: var(--on-primary);
     font-weight: 600;
     transition: transform var(--dur-out) var(--ease-out);

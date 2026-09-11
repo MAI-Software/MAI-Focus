@@ -1,0 +1,10 @@
+# El HTML nunca se cachea: si se queda pegado, pide assets que ya no existen
+# y la app sale en blanco hasta forzar recarga.
+/
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
+
+# Los assets llevan hash en el nombre: se pueden cachear para siempre.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable

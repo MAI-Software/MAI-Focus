@@ -2,6 +2,7 @@
   import Vista from '../lib/Vista.svelte';
   import PlantillaHoja from '../lib/PlantillaHoja.svelte';
   import { estado } from '../lib/estado.svelte';
+  import { exportarCopia, importarCopia } from '../lib/db';
   import type { Plantilla, Tramo } from '../lib/tipos';
   import { hhmm } from '../lib/tiempo';
 
@@ -9,6 +10,32 @@
   const HORAS = Array.from({ length: 13 }, (_, i) => i + 4); // 04:00 a 16:00 como inicio posible
 
   let hoja = $state<{ plantilla: Plantilla | null } | null>(null);
+  let aviso = $state<{ tipo: 'ok' | 'error'; texto: string } | null>(null);
+
+  async function exportar() {
+    const copia = await exportarCopia();
+    const url = URL.createObjectURL(new Blob([JSON.stringify(copia, null, 2)], { type: 'application/json' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mai-focus-${copia.creada.slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    aviso = { tipo: 'ok', texto: `Copia descargada: ${copia.bloques.length} bloques.` };
+  }
+
+  async function importar(e: Event) {
+    const input = e.currentTarget as HTMLInputElement;
+    const archivo = input.files?.[0];
+    input.value = '';
+    if (!archivo) return;
+    try {
+      const r = await importarCopia(JSON.parse(await archivo.text()));
+      await estado.recargarTodo();
+      aviso = { tipo: 'ok', texto: `Restaurado: ${r.bloques} bloques, ${r.objetivos} objetivos, ${r.campanas} campañas.` };
+    } catch (err) {
+      aviso = { tipo: 'error', texto: (err as Error).message || 'No se pudo leer el archivo.' };
+    }
+  }
 </script>
 
 <Vista titulo="Ideas y ajustes" sub="El banco de ideas llega en la próxima fase">
@@ -72,6 +99,25 @@
       <span class="bola"></span>
       <span class="txt">{estado.ajustes.calma ? 'Activado' : 'Desactivado'}</span>
     </button>
+  </section>
+
+  <section>
+    <h2>Copia de seguridad</h2>
+    <p class="ayuda">
+      Tus datos viven solo en este dispositivo hasta que llegue la cuenta. Descarga una copia de vez en cuando:
+      es lo único que te devuelve el año si cambias de móvil o limpias el navegador.
+    </p>
+    <div class="dos">
+      <button type="button" class="sec" onclick={exportar}>Exportar copia</button>
+      <label class="sec archivo">
+        Importar copia
+        <input type="file" accept="application/json,.json" onchange={importar} />
+      </label>
+    </div>
+    <p class="ayuda peligro">Importar sustituye lo que tengas ahora por el contenido del archivo.</p>
+    {#if aviso}
+      <p class="aviso" class:mal={aviso.tipo === 'error'} role="status" aria-live="polite">{aviso.texto}</p>
+    {/if}
   </section>
 
   <section>
@@ -200,6 +246,42 @@
   .txt {
     font-size: var(--fs-sm);
     font-weight: 500;
+  }
+
+  .sec {
+    display: grid;
+    place-items: center;
+    min-height: 48px;
+    padding: 0 var(--sp-3);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .archivo input {
+    display: none;
+  }
+
+  .peligro {
+    margin-top: var(--sp-2);
+    font-size: var(--fs-xs);
+  }
+
+  .aviso {
+    margin: var(--sp-2) 0 0;
+    padding: var(--sp-2) var(--sp-3);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--success);
+    background: var(--surface);
+    font-size: var(--fs-sm);
+  }
+
+  .aviso.mal {
+    border-left-color: var(--destructive);
   }
 
   .plantillas {

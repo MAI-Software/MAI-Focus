@@ -102,6 +102,62 @@ export function bloquesDeMes(anio: number, mes: number): Promise<Bloque[]> {
   return db.bloques.where('fecha').startsWith(pre).toArray();
 }
 
+/** Copia de seguridad: sin cuenta (llega en F5), esta es la única red que hay. */
+export interface Copia {
+  app: 'mai-focus';
+  version: number;
+  creada: string;
+  bloques: Bloque[];
+  objetivos: Objetivo[];
+  campanas: Campana[];
+  plantillas: Plantilla[];
+  ajustes: Ajustes;
+}
+
+export async function exportarCopia(): Promise<Copia> {
+  const [bloques, objetivos, campanas, plantillas, ajustes] = await Promise.all([
+    db.bloques.toArray(),
+    db.objetivos.toArray(),
+    db.campanas.toArray(),
+    db.plantillas.toArray(),
+    leerAjustes()
+  ]);
+  return {
+    app: 'mai-focus',
+    version: 2,
+    creada: new Date().toISOString(),
+    bloques,
+    objetivos,
+    campanas,
+    plantillas,
+    ajustes
+  };
+}
+
+/** Sustituye todo el contenido local por el de la copia. Devuelve el recuento. */
+export async function importarCopia(datos: unknown): Promise<{ bloques: number; objetivos: number; campanas: number }> {
+  const c = datos as Partial<Copia>;
+  if (!c || c.app !== 'mai-focus' || !Array.isArray(c.bloques)) {
+    throw new Error('El archivo no es una copia de MAI-Focus.');
+  }
+  await db.transaction('rw', db.bloques, db.objetivos, db.campanas, db.plantillas, db.kv, async () => {
+    await Promise.all([db.bloques.clear(), db.objetivos.clear(), db.campanas.clear()]);
+    await db.bloques.bulkPut(plano(c.bloques ?? []));
+    await db.objetivos.bulkPut(plano(c.objetivos ?? []));
+    await db.campanas.bulkPut(plano(c.campanas ?? []));
+    if (c.plantillas?.length) {
+      await db.plantillas.clear();
+      await db.plantillas.bulkPut(plano(c.plantillas));
+    }
+    if (c.ajustes) await escribirAjustes({ ...AJUSTES_DEFECTO, ...c.ajustes });
+  });
+  return {
+    bloques: c.bloques?.length ?? 0,
+    objetivos: c.objetivos?.length ?? 0,
+    campanas: c.campanas?.length ?? 0
+  };
+}
+
 export function nuevoId(): string {
   return crypto.randomUUID();
 }

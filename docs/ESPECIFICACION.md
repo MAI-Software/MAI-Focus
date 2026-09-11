@@ -1,6 +1,6 @@
 # MAI-Focus — Organizador de contenido para redes (TDAH-first)
 
-> Estado: F2 entregada (los tres horizontes con herencia de color). Repo público `MAI-Software/MAI-Focus`. Web primero (PC + móvil), APK nativa después vía Capacitor.
+> Estado: F2 + tanda P0 de la auditoría. LIVE en `mai-focus.pages.dev`, repo público `MAI-Software/MAI-Focus`. Web primero (PC + móvil), APK nativa después vía Capacitor.
 
 ## 1. Qué es
 
@@ -154,6 +154,13 @@ reward(user_id, xp, desbloqueos[])
 | F6 | Capacitor, haptics, iconos/splash, APK por Actions | APK |
 
 Despliegue web en Cloudflare Pages desde F1, para probar en el móvil real desde el principio.
+
+### P0 de la auditoría (hecho, 11-09-2026)
+- Botones de acción con `--primary-accion` (#C2410C): 5,18:1 con blanco, antes 3,56:1.
+- Bloques solapados repartidos en carriles en la rejilla del día, en vez de taparse.
+- Las hojas ocupan una entrada del historial: el atrás de Android las cierra y no sale de la app.
+- Exportar e importar copia en JSON desde Ajustes.
+- `public/_headers`: HTML sin caché, `/assets/*` inmutable un año.
 
 ### Fuera de F2 (pendiente)
 - Banco de ideas y recurrencias («Reel los martes»).
