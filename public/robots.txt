@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mai-focus.pages.dev/sitemap.xml
